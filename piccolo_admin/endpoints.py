@@ -300,6 +300,9 @@ class TableConfig:
             else {}
         )
 
+    def is_m2m_columns(self) -> bool:
+        return True if self.table_class._meta.m2m_relationships else False
+
 
 PydanticModel = t.TypeVar("PydanticModel", bound=BaseModel)
 
@@ -539,6 +542,7 @@ class AdminRouter(FastAPI):
             link_column_name = table_config.get_link_column()._meta.name
             order_by = table_config.get_order_by()
             time_resolution = table_config.get_time_resolution()
+            is_m2m_columns = table_config.is_m2m_columns()
             validators = table_config.validators
             if table_class in (auth_table, session_table):
                 validators = validators or Validators()
@@ -559,6 +563,7 @@ class AdminRouter(FastAPI):
                         "link_column_name": link_column_name,
                         "order_by": tuple(i.to_dict() for i in order_by),
                         "time_resolution": time_resolution,
+                        "is_m2m_columns": is_m2m_columns,
                     },
                     validators=validators,
                     hooks=table_config.hooks,

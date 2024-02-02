@@ -4,6 +4,7 @@ An example of how to configure and run the admin.
 Can be run from the command line using `python -m piccolo_admin.example`,
 or `admin_demo`.
 """
+
 import asyncio
 import datetime
 import decimal
@@ -29,6 +30,7 @@ from piccolo.columns.column_types import (
     ForeignKey,
     Integer,
     Interval,
+    LazyTableReference,
     Numeric,
     OnDelete,
     Real,
@@ -40,6 +42,7 @@ from piccolo.columns.column_types import (
     Timestamptz,
     Varchar,
 )
+from piccolo.columns.m2m import M2M
 from piccolo.columns.readable import Readable
 from piccolo.engine.postgres import PostgresEngine
 from piccolo.engine.sqlite import SQLiteEngine
@@ -324,6 +327,47 @@ class DateTimeColumns(Table):
 
 
 ###############################################################################
+# Example of M2M tables. Omit the second tables from M2M field
+
+
+class Band(Table):
+    name = Varchar()
+    genres = M2M(LazyTableReference("GenreToBand", module_path=__name__))
+    members = M2M(LazyTableReference("MemberToBand", module_path=__name__))
+
+    @classmethod
+    def get_readable(cls):
+        return Readable(template="%s", columns=[cls.name])
+
+
+class Genre(Table):
+    name = Varchar()
+
+    @classmethod
+    def get_readable(cls):
+        return Readable(template="%s", columns=[cls.name])
+
+
+class Member(Table):
+    name = Varchar()
+
+    @classmethod
+    def get_readable(cls):
+        return Readable(template="%s", columns=[cls.name])
+
+
+# This is our joining tables
+class GenreToBand(Table):
+    band = ForeignKey(Band)
+    genre = ForeignKey(Genre)
+
+
+class MemberToBand(Table):
+    band = ForeignKey(Band)
+    member = ForeignKey(Member)
+
+
+###############################################################################
 
 
 class BusinessEmailModel(BaseModel):
@@ -406,6 +450,11 @@ TABLE_CLASSES: t.Tuple[t.Type[Table], ...] = (
     Constraints,
     ConstraintTarget,
     DateTimeColumns,
+    Band,
+    Member,
+    Genre,
+    GenreToBand,
+    MemberToBand,
 )
 
 
@@ -456,16 +505,18 @@ director_config = TableConfig(
         Director.photo,
     ],
     media_storage=(
-        S3MediaStorage(
-            column=Director.photo,
-            bucket_name=t.cast(str, BUCKET_NAME),
-            folder_name="director_photo",
-            connection_kwargs=S3_CONFIG,
-        )
-        if USE_S3
-        else LocalMediaStorage(
-            column=Director.photo,
-            media_path=os.path.join(MEDIA_ROOT, "photo"),
+        (
+            S3MediaStorage(
+                column=Director.photo,
+                bucket_name=t.cast(str, BUCKET_NAME),
+                folder_name="director_photo",
+                connection_kwargs=S3_CONFIG,
+            )
+            if USE_S3
+            else LocalMediaStorage(
+                column=Director.photo,
+                media_path=os.path.join(MEDIA_ROOT, "photo"),
+            )
         ),
     ),
     menu_group="Movies",
@@ -519,8 +570,17 @@ date_time_config = TableConfig(
     table_class=DateTimeColumns, menu_group="Testing"
 )
 
+band_config = TableConfig(table_class=Band, menu_group="M2M")
+
+genre_config = TableConfig(table_class=Genre, menu_group="M2M")
+
+member_config = TableConfig(table_class=Member, menu_group="M2M")
+
 APP = create_admin(
     [
+        band_config,
+        genre_config,
+        member_config,
         movie_config,
         director_config,
         studio_config,

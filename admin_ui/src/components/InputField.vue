@@ -200,7 +200,7 @@
             />
         </template>
 
-        <template v-else-if="type == 'array'">
+        <template v-else-if="type == 'array' && format != 'm2m'">
             <ArrayWidget
                 :array="localValue"
                 :enableAddButton="isFilter || !isMediaColumn"
@@ -209,6 +209,19 @@
                 :isFilter="isFilter"
                 :choices="choices"
                 :isNullable="isNullable"
+            />
+            <input
+                :value="localValue ? JSON.stringify(localValue) : null"
+                type="hidden"
+                v-bind:name="columnName"
+            />
+        </template>
+
+        <template v-else-if="format == 'm2m'">
+            <VueMultiselect
+                :options="options"
+                v-model="localValue"
+                :multiple="true"
             />
             <input
                 :value="localValue ? JSON.stringify(localValue) : null"
@@ -225,6 +238,7 @@ import axios from "axios"
 import moment from "moment"
 // @ts-ignore
 import { VueEditor } from "vue3-editor"
+import VueMultiselect from "vue-multiselect"
 
 import ArrayWidget from "./ArrayWidget.vue"
 import ChoiceSelect from "./ChoiceSelect.vue"
@@ -305,7 +319,8 @@ export default defineComponent({
         TimestampWidget,
         TimestamptzWidget,
         TimeWidget,
-        VueEditor
+        VueEditor,
+        VueMultiselect
     },
     data() {
         return {
@@ -350,6 +365,18 @@ export default defineComponent({
         },
         currentTableName() {
             return this.$store.state.currentTableName
+        },
+        options() {
+            const m2mRows = this.$store.state.m2mRows
+            let result = []
+            for (let item in m2mRows) {
+                if (item == this.columnName) {
+                    for (let opt in m2mRows[item]) {
+                        result.push(m2mRows[item][opt])
+                    }
+                }
+            }
+            return result
         }
     },
     methods: {
@@ -510,3 +537,5 @@ div.media_block {
     }
 }
 </style>
+
+<style src="vue-multiselect/dist/vue-multiselect.css"></style>
