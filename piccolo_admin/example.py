@@ -327,7 +327,11 @@ class DateTimeColumns(Table):
 
 
 ###############################################################################
-# Example of M2M tables. Omit the second tables from M2M field
+# Example of M2M tables. Example of use. Add m2m columns to one table
+# only (eg Band) as we will need other tables (without m2m columns)
+# to add them first. After that we add the m2m data through the
+# vue-multiselect drop down menu in the same way as in the video posted
+# in the earlier comment
 
 
 class Band(Table):

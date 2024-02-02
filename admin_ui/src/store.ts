@@ -267,8 +267,6 @@ export default createStore({
                 `${BASE_URL}tables/${config.tableName}/${config.rowID}/`,
                 config.data
             )
-            // const responseM2M = await axios.get(`${BASE_URL}tables/${config.tableName}/m2m/`)
-            // context.commit("updateM2MRows", responseM2M.data.rows)
             return response
         },
         async fetchUser(context) {
