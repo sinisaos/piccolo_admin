@@ -65,10 +65,30 @@ export default defineComponent({
             showModal: false
         }
     },
+    computed: {
+        schema() {
+            return this.$store.state.schema
+        },
+        isTargetColumn() {
+            for (const key in this.schema.properties) {
+                if (key == this.tableName) {
+                    return Object.values(
+                        this.schema.extra.target_column
+                    ).includes(
+                        this.schema.properties[key].extra.foreign_key
+                            ?.target_column
+                    )
+                }
+            }
+        }
+    },
     methods: {
         handleUpdate(event: any) {
             this.selectedValue = event.readable
-            this.hiddenSelectedValue = event.id
+            this.hiddenSelectedValue =
+                this.isTargetColumn == false || this.isFilter == true
+                    ? event.id
+                    : event.readable
             this.showModal = false
             this.$emit("update", event)
         }

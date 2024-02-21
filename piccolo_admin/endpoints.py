@@ -1,6 +1,7 @@
 """
 Creates a basic wrapper around a Piccolo model, turning it into an ASGI app.
 """
+
 from __future__ import annotations
 
 import inspect
@@ -207,6 +208,7 @@ class TableConfig:
     time_resolution: t.Optional[
         t.Dict[t.Union[Timestamp, Timestamptz, Time], t.Union[float, int]]
     ] = None
+    target_column: t.Optional[t.List[Column]] = None
 
     def __post_init__(self):
         if self.visible_columns and self.exclude_visible_columns:
@@ -298,6 +300,13 @@ class TableConfig:
             }
             if self.time_resolution
             else {}
+        )
+
+    def get_target_columns_names(self) -> t.Tuple[str, ...]:
+        return (
+            tuple(i._meta.name for i in self.target_column)
+            if self.target_column
+            else ()
         )
 
 
@@ -539,6 +548,7 @@ class AdminRouter(FastAPI):
             link_column_name = table_config.get_link_column()._meta.name
             order_by = table_config.get_order_by()
             time_resolution = table_config.get_time_resolution()
+            target_column = table_config.get_target_columns_names()
             validators = table_config.validators
             if table_class in (auth_table, session_table):
                 validators = validators or Validators()
@@ -559,6 +569,7 @@ class AdminRouter(FastAPI):
                         "link_column_name": link_column_name,
                         "order_by": tuple(i.to_dict() for i in order_by),
                         "time_resolution": time_resolution,
+                        "target_column": target_column,
                     },
                     validators=validators,
                     hooks=table_config.hooks,

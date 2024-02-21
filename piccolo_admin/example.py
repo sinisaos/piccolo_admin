@@ -4,6 +4,7 @@ An example of how to configure and run the admin.
 Can be run from the command line using `python -m piccolo_admin.example`,
 or `admin_demo`.
 """
+
 import asyncio
 import datetime
 import decimal
@@ -323,6 +324,33 @@ class DateTimeColumns(Table):
     timestamptz_null = Timestamptz(null=True, default=None)
 
 
+class Serie(Table):
+    name = Varchar(length=100, unique=True)
+
+    @classmethod
+    def get_readable(cls) -> Readable:
+        return Readable(template="%s", columns=[cls.name])
+
+
+class Actor(Table):
+    name = Varchar(length=100, unique=True)
+
+    @classmethod
+    def get_readable(cls) -> Readable:
+        return Readable(template="%s", columns=[cls.name])
+
+
+class Review(Table):
+    reviewer = Varchar()
+    director = ForeignKey(references=Director)
+    actor = ForeignKey(Actor, target_column=Actor.name)
+    serie = ForeignKey(Serie, target_column=Serie.name)
+
+    @classmethod
+    def get_readable(cls) -> Readable:
+        return Readable(template="%s", columns=[cls.reviewer])
+
+
 ###############################################################################
 
 
@@ -406,6 +434,9 @@ TABLE_CLASSES: t.Tuple[t.Type[Table], ...] = (
     Constraints,
     ConstraintTarget,
     DateTimeColumns,
+    Actor,
+    Review,
+    Serie,
 )
 
 
@@ -456,16 +487,18 @@ director_config = TableConfig(
         Director.photo,
     ],
     media_storage=(
-        S3MediaStorage(
-            column=Director.photo,
-            bucket_name=t.cast(str, BUCKET_NAME),
-            folder_name="director_photo",
-            connection_kwargs=S3_CONFIG,
-        )
-        if USE_S3
-        else LocalMediaStorage(
-            column=Director.photo,
-            media_path=os.path.join(MEDIA_ROOT, "photo"),
+        (
+            S3MediaStorage(
+                column=Director.photo,
+                bucket_name=t.cast(str, BUCKET_NAME),
+                folder_name="director_photo",
+                connection_kwargs=S3_CONFIG,
+            )
+            if USE_S3
+            else LocalMediaStorage(
+                column=Director.photo,
+                media_path=os.path.join(MEDIA_ROOT, "photo"),
+            )
         ),
     ),
     menu_group="Movies",
@@ -519,6 +552,13 @@ date_time_config = TableConfig(
     table_class=DateTimeColumns, menu_group="Testing"
 )
 
+# we need to provide the target_column argument in the
+# TableConfig so that Piccolo Admin can distinguish between
+# primary and non-primary FKs
+review_config = TableConfig(
+    table_class=Review, target_column=[Actor.name, Serie.name]
+)
+
 APP = create_admin(
     [
         movie_config,
@@ -531,6 +571,9 @@ APP = create_admin(
         constraints_config,
         constraints_target_config,
         date_time_config,
+        Actor,
+        Serie,
+        review_config,
     ],
     forms=[
         FormConfig(
