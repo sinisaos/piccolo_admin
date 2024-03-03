@@ -6,6 +6,7 @@
                 <a
                     href="#"
                     @click.prevent="showMedia"
+                    v-bind:disabled="isReadOnly"
                     v-if="localValue && type != 'array'"
                     ><font-awesome-icon icon="eye" title="View"
                 /></a>
@@ -13,6 +14,7 @@
 
             <MediaViewer
                 v-if="showMediaViewer && mediaViewerConfig"
+                v-bind:disabled="isReadOnly"
                 :mediaViewerConfig="mediaViewerConfig"
                 @close="showMediaViewer = false"
             />
@@ -27,6 +29,7 @@
                 :fieldName="columnName"
                 :isFilter="isFilter"
                 :isNullable="isNullable"
+                :disabled="isReadOnly"
                 :value="value"
             />
         </template>
@@ -39,6 +42,7 @@
                 v-bind:name="columnName"
                 v-bind:placeholder="placeholder"
                 v-bind:value="value"
+                v-bind:disabled="isReadOnly"
             />
         </template>
 
@@ -56,6 +60,7 @@
                     type="date"
                     v-bind:name="columnName"
                     v-bind:placeholder="placeholder"
+                    v-bind:disabled="isReadOnly"
                     v-model="localValue"
                 />
 
@@ -64,6 +69,7 @@
                         :time="localValue"
                         :placeholder="placeholder"
                         :timeResolution="timeResolution ?? 1"
+                        :isReadOnly="isReadOnly"
                         @update="localValue = $event"
                     />
                     <input
@@ -79,6 +85,7 @@
                             :datetime="localValue"
                             :placeholder="placeholder"
                             :timeResolution="timeResolution ?? 1"
+                            :isReadOnly="isReadOnly"
                             @update="localValue = $event"
                         />
                         <input
@@ -92,6 +99,7 @@
                             :datetime="localValue"
                             :placeholder="placeholder"
                             :timeResolution="timeResolution ?? 1"
+                            :isReadOnly="isReadOnly"
                             @update="localValue = $event"
                         />
                         <input
@@ -108,6 +116,7 @@
                     v-if="isRichText"
                     v-model="localValue"
                     v-bind:name="columnName"
+                    v-bind:disabled="isReadOnly"
                     :editor-toolbar="customToolbar"
                 />
                 <textarea
@@ -115,6 +124,7 @@
                     autocomplete="off"
                     ref="textarea"
                     v-bind:name="columnName"
+                    v-bind:disabled="isReadOnly"
                     v-bind:placeholder="placeholder"
                     v-bind:style="{ height: textareaHeight }"
                     v-model="localValue"
@@ -132,6 +142,7 @@
                 <OperatorField :columnName="columnName" v-if="isFilter" />
                 <DurationWidget
                     v-bind:timedelta="convertDurationToSeconds"
+                    v-bind:isReadOnly="isReadOnly"
                     v-on:newTimedelta="localValue = $event"
                 />
                 <input
@@ -149,6 +160,7 @@
                     v-bind:name="columnName"
                     v-bind:style="{ height: textareaHeight }"
                     v-bind:placeholder="placeholder"
+                    v-bind:disabled="isReadOnly"
                     v-on:keyup="setTextareaHeight"
                 />
             </div>
@@ -160,13 +172,14 @@
                     type="text"
                     v-bind:name="columnName"
                     v-bind:placeholder="placeholder"
+                    v-bind:disabled="isReadOnly"
                     v-model="localValue"
                 />
             </template>
         </template>
 
         <template v-else-if="type == 'boolean'">
-            <select v-bind:name="columnName">
+            <select v-bind:name="columnName" v-bind:disabled="isReadOnly">
                 <option
                     v-bind:selected="value == 'all'"
                     v-if="isFilter"
@@ -181,9 +194,7 @@
                 >
                     Null
                 </option>
-                <option v-bind:selected="value == true" value="true">
-                    True
-                </option>
+                <option v-bind:selected="value" value="true">True</option>
                 <option v-bind:selected="value == false" value="false">
                     False
                 </option>
@@ -196,6 +207,7 @@
                 type="text"
                 v-bind:name="columnName"
                 v-bind:placeholder="placeholder"
+                v-bind:disabled="isReadOnly"
                 v-model="localValue"
             />
         </template>
@@ -209,6 +221,7 @@
                 :isFilter="isFilter"
                 :choices="choices"
                 :isNullable="isNullable"
+                :isReadOnly="isReadOnly"
             />
             <input
                 :value="localValue ? JSON.stringify(localValue) : null"
@@ -281,6 +294,10 @@ export default defineComponent({
             default: false
         },
         isRichText: {
+            type: Boolean as PropType<boolean>,
+            default: false
+        },
+        isReadOnly: {
             type: Boolean as PropType<boolean>,
             default: false
         },

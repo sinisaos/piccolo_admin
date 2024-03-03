@@ -7,6 +7,7 @@
             v-model="selectedValue"
             v-on:focus="showModal = true"
             v-on:keydown.enter.prevent
+            v-bind:disabled="isReadOnly"
         />
 
         <input
@@ -53,6 +54,10 @@ export default defineComponent({
             default: false
         },
         isNullable: {
+            type: Boolean as PropType<boolean>,
+            default: false
+        },
+        isReadOnly: {
             type: Boolean as PropType<boolean>,
             default: false
         }

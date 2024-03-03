@@ -153,6 +153,19 @@ class TestTableConfig(TestCase):
                 link_column=TableB.table_a,
             )
 
+    def test_read_only_columns(self):
+        """
+        Make sure the `read_only_columns` is returned.
+        """
+        post_table = TableConfig(
+            table_class=Post,
+            read_only_columns=[Post.name, Post.created],
+        )
+        self.assertEqual(
+            post_table.get_read_only_columns_names(),
+            ("name", "created"),
+        )
+
     def test_sort_column(self):
         """
         Make sure the custom `sort_column` is returned.
@@ -653,6 +666,7 @@ class TestTables(TestCase):
                 "director",
                 "movie",
                 "nullable_columns",
+                "read_only_columns",
                 "required_columns",
                 "sorted_columns",
                 "studio",
@@ -695,6 +709,7 @@ class TestTables(TestCase):
                         "constraints",
                         "date_time_columns",
                         "nullable_columns",
+                        "read_only_columns",
                         "required_columns",
                         "sorted_columns",
                     ],

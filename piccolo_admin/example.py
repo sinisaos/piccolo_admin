@@ -26,6 +26,7 @@ from piccolo.columns.column_types import (
     BigInt,
     Boolean,
     Date,
+    DoublePrecision,
     Email,
     ForeignKey,
     Integer,
@@ -272,6 +273,33 @@ class SortedColumns(Table):
     letter = Varchar()
 
 
+class ReadOnlyColumns(Table):
+    class Genre(int, enum.Enum):
+        fantasy = 1
+        sci_fi = 2
+        documentary = 3
+
+    array_col = Array(base_column=Varchar())
+    bigint_col = BigInt()
+    boolean_col = Boolean()
+    choice_col = SmallInt(choices=Genre)
+    date_col = Date()
+    time_col = Time()
+    foreignkey_col = ForeignKey(Director)
+    integer_col = Integer()
+    interval_col = Interval()
+    json_col = JSON()
+    numeric_col = Numeric(digits=(5, 2))
+    real_col = Real()
+    double_precision_col = DoublePrecision()
+    smallint_col = SmallInt()
+    text_col = Text()
+    timestamp_col = Timestamp()
+    timestamptz_col = Timestamptz()
+    uuid_col = UUID()
+    varchar_col = Varchar()
+
+
 class ConstraintTarget(Table):
     """
     A table used for UI tests.
@@ -432,6 +460,7 @@ TABLE_CLASSES: t.Tuple[t.Type[Table], ...] = (
     Sessions,
     Ticket,
     NullableColumns,
+    ReadOnlyColumns,
     RequiredColumns,
     SortedColumns,
     Constraints,
@@ -533,6 +562,32 @@ required_columns_config = TableConfig(
     menu_group="Testing",
 )
 
+read_only_config = TableConfig(
+    table_class=ReadOnlyColumns,
+    read_only_columns=[
+        ReadOnlyColumns.array_col,
+        ReadOnlyColumns.bigint_col,
+        ReadOnlyColumns.boolean_col,
+        ReadOnlyColumns.choice_col,
+        ReadOnlyColumns.date_col,
+        ReadOnlyColumns.time_col,
+        ReadOnlyColumns.foreignkey_col,
+        ReadOnlyColumns.integer_col,
+        ReadOnlyColumns.interval_col,
+        ReadOnlyColumns.json_col,
+        ReadOnlyColumns.numeric_col,
+        ReadOnlyColumns.real_col,
+        ReadOnlyColumns.double_precision_col,
+        ReadOnlyColumns.smallint_col,
+        ReadOnlyColumns.text_col,
+        ReadOnlyColumns.timestamp_col,
+        ReadOnlyColumns.timestamptz_col,
+        ReadOnlyColumns.uuid_col,
+        ReadOnlyColumns.varchar_col,
+    ],
+    menu_group="Testing",
+)
+
 sorted_columns_config = TableConfig(
     table_class=SortedColumns,
     order_by=[OrderBy(SortedColumns.integer, ascending=True)],
@@ -565,6 +620,7 @@ APP = create_admin(
         studio_config,
         ticket_config,
         nullable_config,
+        read_only_config,
         required_columns_config,
         sorted_columns_config,
         constraints_config,
