@@ -35,18 +35,46 @@ def test_add_array_columns(page: Page, dev_server):
         value="test@gmail.com",
     )
 
+    test_page.add_array_value(
+        field="array_2D",
+        value="test 2D array",
+    )
+
+    test_page.add_array_value(
+        field="array_3D",
+        value="test 3D array",
+    )
+
+    test_page.add_array_value(
+        field="array_4D",
+        value="test 4D array",
+    )
+
+    test_page.add_array_value(
+        field="array_5D",
+        value="test 5D array",
+    )
+
     test_page.submit_form()
 
     response = ArrayColumns.select(
         ArrayColumns.varchar,
         ArrayColumns.integer,
         ArrayColumns.email,
+        ArrayColumns.array_2D,
+        ArrayColumns.array_3D,
+        ArrayColumns.array_4D,
+        ArrayColumns.array_5D,
     ).run_sync()
 
     assert {
         "varchar": ["Alice"],
         "integer": [1],
         "email": ["test@gmail.com"],
+        "array_2D": [["test 2D array"]],
+        "array_3D": [[["test 3D array"]]],
+        "array_4D": [[[["test 4D array"]]]],
+        "array_5D": [[[[["test 5D array"]]]]],
     } in response
 
 

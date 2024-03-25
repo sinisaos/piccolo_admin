@@ -237,6 +237,10 @@ class ArrayColumns(Table):
     varchar = Array(Varchar(64))
     integer = Array(Integer())
     email = Array(Email())
+    array_2D = Array(Array(Varchar()))
+    array_3D = Array(Array(Array(Varchar())))
+    array_4D = Array(Array(Array(Array(Varchar()))))
+    array_5D = Array(Array(Array(Array(Array(Varchar())))))
 
 
 class NullableColumns(Table):

@@ -156,6 +156,7 @@ export interface PropertyExtra {
     nullable: boolean
     secret: boolean
     unique: boolean
+    dimensions: number
     widget?: string
 }
 

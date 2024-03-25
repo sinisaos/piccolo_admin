@@ -22,10 +22,16 @@
                     @updated="updateArray($event, index)"
                 />
                 <input
-                    v-else
+                    v-else-if="arrayDimension == 1"
                     :type="inputType"
                     :value="value"
                     @change="updateArray(getValueFromEvent($event), index)"
+                />
+                <input
+                    v-else
+                    :type="inputType"
+                    :value="value"
+                    @change="updateMultiArray(getValueFromEvent($event), index)"
                 />
 
                 <a
@@ -117,6 +123,9 @@ export default defineComponent({
         },
         isMediaColumn() {
             return this.schema.extra.media_columns.includes(this.fieldName)
+        },
+        arrayDimension() {
+            return this.schema.properties[this.fieldName].extra.dimensions
         }
     },
     methods: {
@@ -125,6 +134,20 @@ export default defineComponent({
         },
         updateArray(value: any, index: number) {
             this.internalArray[index] = value
+            this.$emit("updateArray", this.internalArray)
+        },
+        updateMultiArray(value: any, index: number) {
+            // Nest the first item of each nested array
+            // of different dimensions
+            if (this.arrayDimension == 2) {
+                this.internalArray[index] = [value]
+            } else if (this.arrayDimension == 3) {
+                this.internalArray[index] = [[value]]
+            } else if (this.arrayDimension == 4) {
+                this.internalArray[index] = [[[value]]]
+            } else if (this.arrayDimension == 5) {
+                this.internalArray[index] = [[[[value]]]]
+            }
             this.$emit("updateArray", this.internalArray)
         },
         addArrayElement() {
