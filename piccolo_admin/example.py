@@ -16,6 +16,7 @@ import smtplib
 import typing as t
 
 import targ
+from fastapi import HTTPException
 from hypercorn.asyncio import serve
 from hypercorn.config import Config
 from piccolo.apps.user.tables import BaseUser
@@ -45,6 +46,8 @@ from piccolo.columns.readable import Readable
 from piccolo.engine.postgres import PostgresEngine
 from piccolo.engine.sqlite import SQLiteEngine
 from piccolo.table import Table, create_db_tables_sync, drop_db_tables_sync
+from piccolo_api.crud.endpoints import PiccoloCRUD
+from piccolo_api.crud.validators import Validators
 from piccolo_api.media.local import LocalMediaStorage
 from piccolo_api.media.s3 import S3MediaStorage
 from piccolo_api.session_auth.tables import SessionsBase
@@ -430,6 +433,15 @@ def booking_endpoint(request: Request, data: BookingModel) -> str:
     return "Booking complete"
 
 
+def validator_superuser(piccolo_crud: PiccoloCRUD, request: Request):
+    if not request.user.user.superuser:
+        raise HTTPException(
+            detail="Only a superuser can do this",
+            status_code=403,
+            headers={"Piccolo-Admin-Error": "Only a superuser can do this"},
+        )
+
+
 TABLE_CLASSES: t.Tuple[t.Type[Table], ...] = (
     Director,
     Movie,
@@ -488,6 +500,7 @@ movie_config = TableConfig(
 
 director_config = TableConfig(
     table_class=Director,
+    validators=Validators(every=[validator_superuser]),
     visible_columns=[
         Director._meta.primary_key,
         Director.name,
