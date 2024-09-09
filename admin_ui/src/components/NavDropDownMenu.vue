@@ -13,7 +13,7 @@
                 ><font-awesome-icon icon="key" />{{ $t("Change Password") }}
             </router-link>
         </li>
-        <li>
+        <li v-if="mfaStatus">
             <a href="./api/mfa-setup/" @click="$event.stopPropagation()">
                 <font-awesome-icon icon="mobile-alt" />{{ $t("MFA Setup") }}
             </a>
@@ -49,6 +49,11 @@ import { defineComponent } from "vue"
 import DropDownMenu from "./DropDownMenu.vue"
 
 export default defineComponent({
+    data() {
+        return {
+            mfaStatus: ""
+        }
+    },
     components: {
         DropDownMenu
     },
@@ -82,6 +87,14 @@ export default defineComponent({
                     console.log(error)
                 }
             }
+        }
+    },
+    async mounted() {
+        try {
+            let response = await axios.get("./api/mfa-status/")
+            this.mfaStatus = response.data.mfa_enabled
+        } catch (error) {
+            console.log(error)
         }
     }
 })

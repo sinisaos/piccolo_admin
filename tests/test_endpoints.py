@@ -243,6 +243,37 @@ class TestAdminRouter(TestCase):
         self.assertEqual(response.status_code, 401)
 
 
+class TestMFAStatus(TableTest):
+    credentials = {"username": "Bob", "password": "bob123"}
+
+    tables = [BaseUser, SessionsBase, AuthenticatorSecret]
+
+    def setUp(self):
+        super().setUp()
+        BaseUser.create_user_sync(
+            **self.credentials, active=True, admin=True, superuser=True
+        )
+
+    def test_mfa_status(self):
+        client = TestClient(APP)
+
+        # To get a CSRF cookie
+        response = client.get("/")
+        csrftoken = response.cookies["csrftoken"]
+
+        # Login
+        payload = dict(csrftoken=csrftoken, **self.credentials)
+        client.post(
+            "/public/login/",
+            json=payload,
+            headers={"X-CSRFToken": csrftoken},
+        )
+
+        response = client.get("/api/mfa-status/")
+        self.assertEqual(response.json(), {"mfa_enabled": True})
+        self.assertEqual(response.status_code, 200)
+
+
 class TestForms(TableTest):
     credentials = {"username": "Bob", "password": "bob123"}
 
