@@ -5,6 +5,7 @@ Creates a basic wrapper around a Piccolo model, turning it into an ASGI app.
 from __future__ import annotations
 
 import inspect
+import io
 import itertools
 import json
 import logging
@@ -14,6 +15,7 @@ from dataclasses import dataclass
 from datetime import timedelta
 from functools import partial
 
+import typing_extensions
 from fastapi import FastAPI, File, Form, UploadFile
 from piccolo.apps.user.tables import BaseUser
 from piccolo.columns.base import Column
@@ -51,7 +53,7 @@ from starlette.middleware import Middleware
 from starlette.middleware.authentication import AuthenticationMiddleware
 from starlette.middleware.exceptions import HTTPException
 from starlette.requests import Request
-from starlette.responses import HTMLResponse, JSONResponse
+from starlette.responses import HTMLResponse, JSONResponse, Response
 from starlette.staticfiles import StaticFiles
 
 from .translations.data import TRANSLATIONS
@@ -92,9 +94,21 @@ class GenerateFileURLResponseModel(BaseModel):
     file_url: str = Field(description="A URL which the file is accessible on.")
 
 
+class GroupItem(BaseModel):
+    name: str
+    slug: str
+
+
 class GroupedTableNamesResponseModel(BaseModel):
     grouped: t.Dict[str, t.List[str]] = Field(default_factory=list)
     ungrouped: t.List[str] = Field(default_factory=list)
+
+
+class GroupedFormsResponseModel(BaseModel):
+    grouped: t.Dict[str, t.List[FormConfigResponseModel]] = Field(
+        default_factory=list
+    )
+    ungrouped: t.List[FormConfigResponseModel] = Field(default_factory=list)
 
 
 @dataclass
@@ -309,6 +323,16 @@ PydanticModel = t.TypeVar("PydanticModel", bound=BaseModel)
 
 
 @dataclass
+class FileResponse:
+    contents: t.Union[io.StringIO, io.BytesIO]
+    file_name: str
+    media_type: str
+
+
+FormResponse: typing_extensions.TypeAlias = t.Union[str, FileResponse, None]
+
+
+@dataclass
 class FormConfig:
     """
     Used to specify forms, which are passed into ``create_admin``.
@@ -328,6 +352,10 @@ class FormConfig:
     :param description:
         An optional description which is shown in the UI to explain to the user
         what the form is for.
+    :param form_group:
+        If specified, forms can be divided into groups in the form
+        menu. This is useful when you have many forms that you
+        can organize into groups for better visibility.
 
     Here's a full example:
 
@@ -352,7 +380,8 @@ class FormConfig:
         config = FormConfig(
             name="My Form",
             pydantic_model=MyModel,
-            endpoint=my_endpoint
+            endpoint=my_endpoint,
+            form_group="Text forms",
         )
 
     """
@@ -363,14 +392,16 @@ class FormConfig:
         pydantic_model: t.Type[PydanticModel],
         endpoint: t.Callable[
             [Request, PydanticModel],
-            t.Union[str, None, t.Coroutine],
+            t.Union[FormResponse, t.Coroutine[None, None, FormResponse]],
         ],
         description: t.Optional[str] = None,
+        form_group: t.Optional[str] = None,
     ):
         self.name = name
         self.pydantic_model = pydantic_model
         self.endpoint = endpoint
         self.description = description
+        self.form_group = form_group
         self.slug = self.name.replace(" ", "-").lower()
 
 
@@ -616,6 +647,14 @@ class AdminRouter(FastAPI):
             methods=["GET"],
             tags=["Forms"],
             response_model=t.List[FormConfigResponseModel],
+        )
+
+        private_app.add_api_route(
+            path="/forms/grouped/",
+            endpoint=self.get_grouped_forms,  # type: ignore
+            methods=["GET"],
+            response_model=GroupedFormsResponseModel,
+            tags=["Forms"],
         )
 
         private_app.add_api_route(
@@ -933,6 +972,34 @@ class AdminRouter(FastAPI):
             for form in self.forms
         ]
 
+    def get_grouped_forms(self) -> GroupedFormsResponseModel:
+        """
+        Returns a list of custom forms registered with the admin, grouped using
+        `form_group`.
+        """
+        response = GroupedFormsResponseModel()
+        group_names = sorted(
+            {
+                v.form_group
+                for _, v in self.form_config_map.items()
+                if v.form_group
+            }
+        )
+        response.grouped = {i: [] for i in group_names}
+        for _, form_config in self.form_config_map.items():
+            form_group = form_config.form_group
+            form_config_response = FormConfigResponseModel(
+                name=form_config.name,
+                slug=form_config.slug,
+                description=form_config.description,
+            )
+            if form_group is None:
+                response.ungrouped.append(form_config_response)
+            else:
+                response.grouped[form_group].append(form_config_response)
+
+        return response
+
     def get_single_form(self, form_slug: str) -> FormConfigResponseModel:
         """
         Returns the FormConfig for the given form.
@@ -962,10 +1029,11 @@ class AdminRouter(FastAPI):
         Handles posting of custom forms.
         """
         form_config = self.form_config_map.get(form_slug)
-        data = await request.json()
 
         if form_config is None:
             raise HTTPException(status_code=404, detail="No such form found")
+
+        data = await request.json()
 
         try:
             model_instance = form_config.pydantic_model(**data)
@@ -988,6 +1056,18 @@ class AdminRouter(FastAPI):
         except ValueError as exception:
             return JSONResponse(
                 {"custom_form_error": str(exception)}, status_code=422
+            )
+
+        if isinstance(response, FileResponse):
+            headers = {
+                "Content-Disposition": (
+                    f'attachment; filename="{response.file_name}"'
+                )
+            }
+            return Response(
+                response.contents.getvalue(),
+                headers=headers,
+                media_type=response.media_type,
             )
 
         message = (
@@ -1257,7 +1337,8 @@ def create_admin(
                     "Google": "https://google.com"
                 },
             )
-    param mfa_providers:
+
+    :param mfa_providers:
         Enables Multi-factor Authentication in the login process.
 
     """  # noqa: E501
