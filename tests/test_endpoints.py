@@ -17,6 +17,7 @@ from piccolo.columns.column_types import (
 )
 from piccolo.table import Table, create_db_tables_sync, drop_db_tables_sync
 from piccolo.testing.test_case import TableTest
+from piccolo_api.crud.endpoints import OrderBy
 from piccolo_api.crud.hooks import Hook, HookType
 from piccolo_api.crud.validators import Validators
 from piccolo_api.media.local import LocalMediaStorage
@@ -25,12 +26,7 @@ from piccolo_api.session_auth.tables import SessionsBase
 from starlette.exceptions import HTTPException
 from starlette.testclient import TestClient
 
-from piccolo_admin.endpoints import (
-    OrderBy,
-    TableConfig,
-    create_admin,
-    get_all_tables,
-)
+from piccolo_admin.endpoints import TableConfig, create_admin, get_all_tables
 from piccolo_admin.example.app import APP, MEDIA_ROOT, Director, Movie
 from piccolo_admin.translations.data import ENGLISH, FRENCH, TRANSLATIONS
 from piccolo_admin.version import __VERSION__

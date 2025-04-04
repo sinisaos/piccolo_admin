@@ -1,6 +1,7 @@
 *.pyc
 .vscode/
 .mypy_cache/
+.pytest_cache/
 .DS_Store
 node_modules/
 **/dist/*.html

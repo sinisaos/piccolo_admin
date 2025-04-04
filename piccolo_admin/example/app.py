@@ -13,12 +13,13 @@ import typing as t
 import targ
 from hypercorn.asyncio import serve
 from hypercorn.config import Config
+from piccolo_api.crud.endpoints import OrderBy
 from piccolo_api.encryption.providers import XChaCha20Provider
 from piccolo_api.media.local import LocalMediaStorage
 from piccolo_api.media.s3 import S3MediaStorage
 from piccolo_api.mfa.authenticator.provider import AuthenticatorProvider
 
-from piccolo_admin.endpoints import OrderBy, TableConfig, create_admin
+from piccolo_admin.endpoints import TableConfig, create_admin
 from piccolo_admin.example.forms import FORMS
 from piccolo_admin.example.tables import (
     ArrayColumns,
@@ -264,6 +265,8 @@ APP = create_admin(
             secret_table=AuthenticatorSecret,
         ),
     ],
+    # uncomment this to allow an unauthorized user to access the admin UI
+    # auth_backend=SessionsAuthBackend(allow_unauthenticated=True),
 )
 
 
