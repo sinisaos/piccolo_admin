@@ -347,7 +347,7 @@ def create_pydantic_model(
         column_name = item._meta.name
         field = pydantic.Field(
             json_schema_extra={
-                "extra": extra,
+                "extra": {},
                 "format": "m2m",
             },
             **params,

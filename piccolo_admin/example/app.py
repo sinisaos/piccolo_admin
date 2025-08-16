@@ -278,7 +278,6 @@ APP = create_admin(
             secret_table=AuthenticatorSecret,
         ),
     ],
-    site_name="CRM Dashboard",
 )
 
 

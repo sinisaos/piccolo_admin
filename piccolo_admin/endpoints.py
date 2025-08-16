@@ -557,6 +557,7 @@ class AdminRouter(FastAPI):
         self.forms = forms
         self.read_only = read_only
         self.sidebar_links = sidebar_links
+        self.mfa_providers = mfa_providers
         self.form_config_map = {form.slug: form for form in self.forms}
 
         with open(os.path.join(ASSET_PATH, "index.html")) as f:
@@ -640,6 +641,13 @@ class AdminRouter(FastAPI):
             endpoint=self.get_sidebar_links,  # type: ignore
             methods=["GET"],
             tags=["Links"],
+        )
+
+        private_app.add_api_route(
+            path="/mfa-status/",
+            endpoint=self.get_mfa_status,  # type: ignore
+            methods=["GET"],
+            tags=["MFA"],
         )
 
         private_app.add_api_route(
@@ -738,13 +746,13 @@ class AdminRouter(FastAPI):
         #######################################################################
         # MFA
 
-        if mfa_providers:
-            if len(mfa_providers) > 1:
+        if self.mfa_providers:
+            if len(self.mfa_providers) > 1:
                 raise ValueError(
                     "Only a single mfa_provider is currently supported."
                 )
 
-            for mfa_provider in mfa_providers:
+            for mfa_provider in self.mfa_providers:
                 private_app.mount(
                     path="/mfa-setup/",
                     # This rate limiting is because some of the forms accept
@@ -1089,6 +1097,16 @@ class AdminRouter(FastAPI):
         Returns the custom links registered with the admin.
         """
         return self.sidebar_links
+
+    ###########################################################################
+
+    def get_mfa_status(self) -> JSONResponse:
+        """
+        Returns the status of MFA providers.
+        """
+        return JSONResponse(
+            {"mfa_enabled": True if self.mfa_providers else False}
+        )
 
     ###########################################################################
 

@@ -10,5 +10,7 @@ omit = [
      "piccolo_admin/example/*",
      "piccolo_admin/example_data.py",
      "piccolo_admin/piccolo_app.py",
-     "piccolo_admin/sandbox.py"
+     "piccolo_admin/sandbox.py",
+     "piccolo_admin/custom_piccolo/*",
+     "piccolo_admin/custom_piccolo_api/*",
 ]
