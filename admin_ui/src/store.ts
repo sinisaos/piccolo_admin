@@ -196,7 +196,8 @@ export default createStore({
                 if (axios.isAxiosError(error)) {
                     console.log(error.response)
                     context.commit("updateApiResponseMessage", {
-                        contents: `Problem fetching ${tableName} rows.`,
+                        contents: `Problem fetching ${tableName} rows. 
+                        ${JSON.parse(JSON.stringify(error.response?.data.detail))}.`,
                         type: "error"
                     })
                 }
@@ -250,11 +251,22 @@ export default createStore({
             return response
         },
         async fetchSchema(context, tableName: string) {
-            const response = await axios.get<i.Schema>(
-                `${BASE_URL}tables/${tableName}/schema/`
-            )
-            context.commit("updateSchema", response.data)
-            return response
+            try {
+                const response = await axios.get(
+                    `${BASE_URL}tables/${tableName}/schema/`
+                )
+                context.commit("updateSchema", response.data)
+                return response
+            } catch (error) {
+                if (axios.isAxiosError(error)) {
+                    console.log(error.response)
+                    context.commit("updateApiResponseMessage", {
+                        contents: `Problem fetching ${tableName} rows. 
+                        ${JSON.parse(JSON.stringify(error.response?.data.detail))}.`,
+                        type: "error"
+                    })
+                }
+            }
         },
         async createRow(context, config: i.CreateRow) {
             const response = await axios.post(

@@ -11,8 +11,11 @@ import os
 from typing import cast
 
 import targ
+from fastapi import HTTPException, Request
 from hypercorn.asyncio import serve
 from hypercorn.config import Config
+from piccolo_api.crud.endpoints import PiccoloCRUD
+from piccolo_api.crud.validators import Validators
 from piccolo_api.encryption.providers import XChaCha20Provider
 from piccolo_api.media.local import LocalMediaStorage
 from piccolo_api.media.s3 import S3MediaStorage
@@ -108,6 +111,15 @@ if not USE_S3 and not os.path.exists(MEDIA_ROOT):
     os.mkdir(MEDIA_ROOT)
 
 
+def validator_superuser(piccolo_crud: PiccoloCRUD, request: Request):
+    if not request.user.user.superuser:
+        raise HTTPException(
+            detail="Only a superuser can do this",
+            status_code=403,
+            headers={"Piccolo-Admin-Error": "Only a superuser can do this"},
+        )
+
+
 ###############################################################################
 # Configure tables
 
@@ -151,6 +163,7 @@ movie_config = TableConfig(
 
 director_config = TableConfig(
     table_class=Director,
+    validators=Validators(every=[validator_superuser]),
     visible_columns=[
         Director._meta.primary_key,
         Director.name,
