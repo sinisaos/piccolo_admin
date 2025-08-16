@@ -1,7 +1,7 @@
-piccolo>=1.7.0
-piccolo_api>=1.5.2
 uvicorn
 aiofiles>=0.5.0
 Hypercorn
 targ>=0.1.9
 fastapi>=0.100.0
+piccolo @ git+https://github.com/sinisaos/piccolo@dev#egg=piccolo
+piccolo_api @ git+https://github.com/sinisaos/piccolo_api@dev#egg=piccolo_api
