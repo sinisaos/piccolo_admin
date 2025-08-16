@@ -36,7 +36,8 @@ export default createStore({
         formGroups: {},
         user: undefined,
         loadingStatus: false,
-        customLinks: {}
+        customLinks: {},
+        m2mRows: []
     },
     mutations: {
         updateTableGroups(state, value) {
@@ -102,6 +103,9 @@ export default createStore({
         },
         updateCustomLinks(state, value) {
             state.customLinks = value
+        },
+        updateM2MRows(state, m2mRows) {
+            state.m2mRows = m2mRows
         }
     },
     actions: {
@@ -232,6 +236,8 @@ export default createStore({
             const response = await axios.get(
                 `${BASE_URL}tables/${tableName}/new/`
             )
+            const responseM2M = await axios.get(`${BASE_URL}tables/${tableName}/m2m/`)
+            context.commit("updateM2MRows", responseM2M.data.rows)
             return response
         },
         async fetchSingleRow(context, config: i.FetchSingleRowConfig) {
@@ -239,6 +245,8 @@ export default createStore({
                 `${BASE_URL}tables/${config.tableName}/${config.rowID}/?__readable=true`
             )
             context.commit("updateSelectedRow", response.data)
+            const responseM2M = await axios.get(`${BASE_URL}tables/${config.tableName}/m2m/`)
+            context.commit("updateM2MRows", responseM2M.data.rows)
             return response
         },
         async fetchSchema(context, tableName: string) {
@@ -246,7 +254,6 @@ export default createStore({
                 `${BASE_URL}tables/${tableName}/schema/`
             )
             context.commit("updateSchema", response.data)
-
             return response
         },
         async createRow(context, config: i.CreateRow) {

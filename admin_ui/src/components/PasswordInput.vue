@@ -2,6 +2,7 @@
     <div class="password_wrapper">
         <input
             name="password"
+            placeholder="Enter password"
             v-bind:value="value"
             v-bind:type="showPassword ? 'text' : 'password'"
             v-on:input="

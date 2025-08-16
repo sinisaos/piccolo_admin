@@ -122,7 +122,7 @@ div.sidebar {
                 }
 
                 &.active {
-                    border-left: 3px solid @light_blue;
+                    border-left: 3px solid darken(@dark_blue, 20%);
                 }
 
                 span {

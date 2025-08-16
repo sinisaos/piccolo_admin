@@ -18,16 +18,6 @@
                 <font-awesome-icon icon="mobile-alt" />{{ $t("MFA Setup") }}
             </a>
         </li>
-        <li v-if="darkMode">
-            <a href="#" @click.prevent="updateDarkMode(false)">
-                <font-awesome-icon icon="sun" />{{ $t("Light Mode") }}
-            </a>
-        </li>
-        <li v-else>
-            <a href="#" @click.prevent="updateDarkMode(true)">
-                <font-awesome-icon icon="moon" />{{ $t("Dark Mode") }}
-            </a>
-        </li>
         <li>
             <a href="#" @click.prevent="showTimezoneModal"
                 ><font-awesome-icon icon="globe" />{{ $t("Set Timezone") }}</a
@@ -52,15 +42,7 @@ export default defineComponent({
     components: {
         DropDownMenu
     },
-    computed: {
-        darkMode() {
-            return this.$store.state.darkMode
-        }
-    },
     methods: {
-        updateDarkMode(enabled: boolean) {
-            this.$store.commit("updateDarkMode", enabled)
-        },
         showAboutModal() {
             this.$store.commit("updateShowAboutModal", true)
         },

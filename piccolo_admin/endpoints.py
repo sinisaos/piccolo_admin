@@ -30,12 +30,10 @@ from piccolo.columns.reference import LazyTableReference
 from piccolo.table import Table
 from piccolo.utils.warnings import Level, colored_warning
 from piccolo_api.change_password.endpoints import change_password
-from piccolo_api.crud.endpoints import OrderBy, PiccoloCRUD
 from piccolo_api.crud.hooks import Hook
 from piccolo_api.crud.validators import Validators
 from piccolo_api.csp.middleware import CSPConfig, CSPMiddleware
 from piccolo_api.csrf.middleware import CSRFMiddleware
-from piccolo_api.fastapi.endpoints import FastAPIKwargs, FastAPIWrapper
 from piccolo_api.media.base import MediaStorage
 from piccolo_api.media.local import LocalMediaStorage
 from piccolo_api.mfa.endpoints import mfa_setup
@@ -57,6 +55,8 @@ from starlette.requests import Request
 from starlette.responses import HTMLResponse, JSONResponse, Response
 from starlette.staticfiles import StaticFiles
 
+from .custom_piccolo_api.crud import OrderBy, PiccoloCRUD
+from .custom_piccolo_api.fastapi import FastAPIKwargs, FastAPIWrapper
 from .translations.data import TRANSLATIONS
 from .translations.models import (
     Translation,
@@ -319,6 +319,9 @@ class TableConfig:
             else {}
         )
 
+    def is_m2m_columns(self) -> bool:
+        return True if self.table_class._meta.m2m_relationships else False
+
 
 PydanticModel = TypeVar("PydanticModel", bound=BaseModel)
 
@@ -580,10 +583,14 @@ class AdminRouter(FastAPI):
             link_column_name = table_config.get_link_column()._meta.name
             order_by = table_config.get_order_by()
             time_resolution = table_config.get_time_resolution()
+            is_m2m_columns = table_config.is_m2m_columns()
             validators = table_config.validators
             if table_class in (auth_table, session_table):
                 validators = validators or Validators()
-                validators.every = [superuser_validators, *validators.every]
+                validators.every = [
+                    superuser_validators,  # type: ignore
+                    *validators.every,
+                ]
 
             FastAPIWrapper(
                 root_url=f"/tables/{table_class._meta.tablename}/",
@@ -600,6 +607,7 @@ class AdminRouter(FastAPI):
                         "link_column_name": link_column_name,
                         "order_by": tuple(i.to_dict() for i in order_by),
                         "time_resolution": time_resolution,
+                        "is_m2m_columns": is_m2m_columns,
                     },
                     validators=validators,
                     hooks=table_config.hooks,

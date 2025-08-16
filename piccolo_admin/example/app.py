@@ -23,11 +23,13 @@ from piccolo_admin.example.forms import FORMS
 from piccolo_admin.example.tables import (
     ArrayColumns,
     AuthenticatorSecret,
+    Band,
     Choices,
     Constraints,
     ConstraintTarget,
     DateTimeColumns,
     Director,
+    Genre,
     Movie,
     NullableColumns,
     RequiredColumns,
@@ -230,10 +232,22 @@ choices_config = TableConfig(
     menu_group="Testing",
 )
 
+band_config = TableConfig(
+    table_class=Band,
+    menu_group="M2M",
+)
+
+genre_config = TableConfig(
+    table_class=Genre,
+    menu_group="M2M",
+)
+
 ###############################################################################
 
 APP = create_admin(
     [
+        band_config,
+        genre_config,
         movie_config,
         director_config,
         studio_config,
@@ -264,6 +278,7 @@ APP = create_admin(
             secret_table=AuthenticatorSecret,
         ),
     ],
+    site_name="CRM Dashboard",
 )
 
 

@@ -1,6 +1,6 @@
 <template>
     <Modal v-on:close="$emit('close')" title="Bulk Update">
-        <template v-if="schema">
+        <template v-if="schema && !isM2MRows">
             <p>{{ $t("Select a column to update") }}</p>
 
             <select name="property" v-model="selectedPropertyName">
@@ -59,6 +59,13 @@
                 <button :disabled="!buttonEnabled">{{ $t("Update") }}</button>
             </form>
         </template>
+        <template v-else>
+            <BulkUpdateM2MModal
+                v-bind:tableName="tableName"
+                v-bind:selectedRows="selectedRows"
+                v-on:close="$emit('close')"
+            />
+        </template>
     </Modal>
 </template>
 
@@ -67,6 +74,7 @@ import { type PropType, defineComponent } from "vue"
 import InputField from "../components/InputField.vue"
 import KeySearch from "../components/KeySearch.vue"
 import Modal from "../components/Modal.vue"
+import BulkUpdateM2MModal from "../components/BulkUpdateM2MModal.vue"
 import {
     type Schema,
     type APIResponseMessage,
@@ -86,7 +94,8 @@ export default defineComponent({
     components: {
         Modal,
         InputField,
-        KeySearch
+        KeySearch,
+        BulkUpdateM2MModal
     },
     data() {
         return {
@@ -100,6 +109,9 @@ export default defineComponent({
             return this.selectedPropertyName
                 ? this.schema?.properties[this.selectedPropertyName]
                 : undefined
+        },
+        isM2MRows() {
+            return this.$store.state.schema.extra.is_m2m_columns
         }
     },
     setup() {

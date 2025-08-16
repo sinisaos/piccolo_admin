@@ -18,6 +18,7 @@ body,
 textarea,
 button {
     font-family: 'Avenir', Helvetica, Arial, sans-serif;
+    border-radius: .3rem;
 }
 
 .light_mode {
@@ -30,7 +31,8 @@ button {
     }
 
     div.sidebar {
-        background-color: @light_blue_grey;
+        margin: 0;
+        background-color: @dark_blue;
 
         li {
             a:hover {
@@ -69,10 +71,10 @@ button {
         }
 
         &.subtle {
-            color: @dark_grey;
+            color: white;
 
             &:hover {
-                color: @dark_grey;
+                color: darken(@dark_blue, 20%);
             }
         }
     }
@@ -82,12 +84,17 @@ button {
     textarea {
         background-color: darken(white, 5%);
         border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: .3rem;
         color: @dark_grey;
 
         &[type="file"] {
             background: none;
             border: none;
         }
+    }
+
+    th {
+        background-color: @light_blue_grey;
     }
 
     tr {
@@ -97,11 +104,13 @@ button {
     }
 
     .opaque {
-        background-color: white;
+        color: white;
+        background-color: @dark_blue;
     }
 
     #nav {
         background-color: @dark_blue;
+        height: 4rem;
     }
 
     button {
@@ -110,6 +119,38 @@ button {
         &:hover {
             background-color: lighten(@dark_blue, 10%);
         }
+    }
+
+    div#overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        right: 0;
+        background-color: rgba(0, 0, 0, 0.7);
+        overflow: auto;
+        z-index: 2000;
+
+        div.modal {
+            border-radius: 0.5rem;
+            box-sizing: border-box;
+            margin: 1rem auto;
+            max-width: 100%;
+            padding: 1rem;
+            width: 30rem;
+            background-color: white;
+            color: @dark_grey;
+        }
+    }
+
+    div.multiselect__tags {
+        min-height: 1rem;
+        display: block;
+        padding: 8px 40px 0 8px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: .3rem;
+        background-color: darken(white, 5%);
+        font-size: 14px;
     }
 }
 
@@ -135,6 +176,10 @@ button {
 
     ul#drop_down_menu {
         background-color: lighten(@dark_grey, 5%);
+    }
+
+    th {
+        background-color: darken(@dark_grey, 3%);
     }
 
     tr {
@@ -163,6 +208,7 @@ button {
 
     #nav {
         background-color: darken(@dark_grey, 5%);
+        height: 4rem;
     }
 
     button {
@@ -184,6 +230,21 @@ button {
     .ql-picker-label {
         color: white
     }
+
+    div.multiselect__tags {
+        min-height: 1rem;
+        display: block;
+        padding: 8px 40px 0 8px;
+        border-radius: 0.3rem;
+        //border: 1px solid rgba(0, 0, 0, 0.2);
+        background-color: darken(@dark_grey, 4%);
+        font-size: 14px;
+
+        ::placeholder {
+            color: @off_white;
+        }
+    }
+
 }
 
 #app {

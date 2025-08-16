@@ -827,6 +827,7 @@ div.wrapper {
                 text-decoration: none;
                 margin-left: 0.25rem;
                 box-sizing: border-box;
+                border-radius: .2rem;
                 padding: 0.2rem 0.5rem;
                 text-align: center;
 

@@ -6,7 +6,6 @@
 
                 <p class="close">
                     <a
-                        class="subtle"
                         href="#"
                         v-on:click.prevent="$emit('close')"
                     >
@@ -51,6 +50,7 @@ div#overlay {
         max-width: 100%;
         padding: 1rem;
         width: 30rem;
+        //background-color: white;
 
         label,
         input {

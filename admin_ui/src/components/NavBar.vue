@@ -18,6 +18,16 @@
         </h1>
 
         <ul>
+            <li v-if="darkMode">
+                <a href="#" @click.prevent="updateDarkMode(false)" title="Light/Dark mode">
+                    <font-awesome-icon icon="sun" style="margin-right: 1rem"/>
+                </a>
+            </li>
+            <li v-else>
+                <a href="#" @click.prevent="updateDarkMode(true)" title="Light/Dark mode">
+                    <font-awesome-icon icon="moon" style="margin-right: 1rem"/>
+                </a>
+            </li>
             <li style="margin-right: 1rem">
                 <a
                     href="#"
@@ -86,6 +96,9 @@ export default defineComponent({
             } else {
                 return username
             }
+        },
+        darkMode() {
+            return this.$store.state.darkMode
         }
     },
     components: {
@@ -96,6 +109,9 @@ export default defineComponent({
     methods: {
         closeDropdown() {
             this.showLanguageDropdown = false
+        },
+        updateDarkMode(enabled: boolean) {
+            this.$store.commit("updateDarkMode", enabled)
         }
     }
 })
@@ -123,7 +139,7 @@ export default defineComponent({
         color: white;
         flex-grow: 1;
         padding: 1rem 0;
-        margin: 0;
+        margin: 0.5rem;
         font-size: 1.2rem;
 
         @media (max-width: @mobile_width) {

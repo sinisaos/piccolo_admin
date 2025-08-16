@@ -131,6 +131,7 @@ div.filter_wrapper {
         position: absolute;
         top: 0.5rem;
         right: 0.5rem;
+        border-radius: .2rem;
     }
 }
 </style>

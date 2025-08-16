@@ -6,7 +6,7 @@ import os
 import random
 
 from piccolo.apps.user.tables import BaseUser
-from piccolo.columns.column_types import (
+from piccolo.columns import (
     JSON,
     UUID,
     Array,
@@ -17,6 +17,7 @@ from piccolo.columns.column_types import (
     ForeignKey,
     Integer,
     Interval,
+    LazyTableReference,
     Numeric,
     OnDelete,
     Real,
@@ -28,6 +29,7 @@ from piccolo.columns.column_types import (
     Timestamptz,
     Varchar,
 )
+from piccolo.columns.m2m import M2M
 from piccolo.columns.readable import Readable
 from piccolo.engine.postgres import PostgresEngine
 from piccolo.engine.sqlite import SQLiteEngine
@@ -288,6 +290,29 @@ class Choices(Table):
     varchar_null = Varchar(choices=VarcharChoices, null=True)
 
 
+class Band(Table):
+    name = Varchar()
+    genres = M2M(LazyTableReference("GenreToBand", module_path=__name__))
+
+    @classmethod
+    def get_readable(cls) -> Readable:
+        return Readable(template="%s", columns=[cls.name])
+
+
+class Genre(Table):
+    name = Varchar()
+
+    @classmethod
+    def get_readable(cls) -> Readable:
+        return Readable(template="%s", columns=[cls.name])
+
+
+# This is our joining table:
+class GenreToBand(Table):
+    band = ForeignKey(Band)
+    genre = ForeignKey(Genre)
+
+
 ###############################################################################
 # Create the schema and populate data
 
@@ -307,6 +332,9 @@ TABLE_CLASSES: tuple[type[Table], ...] = (
     ConstraintTarget,
     DateTimeColumns,
     Choices,
+    Band,
+    Genre,
+    GenreToBand,
 )
 
 
