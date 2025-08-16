@@ -50,7 +50,6 @@ div#overlay {
         max-width: 100%;
         padding: 1rem;
         width: 30rem;
-        //background-color: white;
 
         label,
         input {

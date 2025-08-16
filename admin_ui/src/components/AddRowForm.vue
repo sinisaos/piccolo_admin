@@ -79,7 +79,6 @@ export default defineComponent({
                     type: "success"
                 }
                 this.$store.commit("updateApiResponseMessage", message)
-                
                 this.$emit("addedRow")
                 this.$emit("close")
             } catch (error) {
