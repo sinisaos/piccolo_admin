@@ -5,6 +5,7 @@
             v-model="localValue"
             :placeholder="placeholder"
             :step="timeResolution"
+            :disabled="isReadOnly"
         />
     </div>
 </template>
@@ -28,6 +29,10 @@ const props = defineProps({
     timeResolution: {
         type: Number as PropType<number>,
         default: 60
+    },
+    isReadOnly: {
+        type: Boolean as PropType<boolean>,
+        default: false
     }
 })
 

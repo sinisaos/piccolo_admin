@@ -9,6 +9,9 @@
                 <span class="required" v-if="isRequired(String(columnName))"
                     >*</span
                 >
+                <span class="readonly" v-if="isReadOnly(String(columnName))"
+                    >(read-only)</span
+                >
                 <Tooltip
                     v-if="property.extra.help_text"
                     :content="property.extra.help_text"
@@ -23,6 +26,11 @@
                         class="add"
                         target="_blank"
                         v-if="!isFilter"
+                        :style="
+                            isReadOnly(String(columnName))
+                                ? 'pointer-events: none'
+                                : 'cursor: pointer'
+                        "
                     >
                         <font-awesome-icon icon="plus" />
                     </router-link>
@@ -38,6 +46,11 @@
                         }"
                         class="add"
                         target="_blank"
+                        :style="
+                            isReadOnly(String(columnName))
+                                ? 'pointer-events: none'
+                                : 'cursor: pointer'
+                        "
                     >
                         <font-awesome-icon icon="edit" />
                     </router-link>
@@ -51,6 +64,7 @@
                 v-bind:rowID="getValue(String(columnName))"
                 v-bind:readable="getValue(columnName + '_readable')"
                 v-bind:isNullable="property.extra.nullable"
+                v-bind:isReadOnly="isReadOnly(String(columnName))"
                 @update="foreignKeyIDs[String(columnName)] = $event.id"
             />
             <InputField
@@ -59,6 +73,7 @@
                 v-bind:format="getFormat(property)"
                 v-bind:isFilter="isFilter"
                 v-bind:isNullable="property.extra.nullable"
+                v-bind:isReadOnly="isReadOnly(String(columnName))"
                 v-bind:required="isRequired(String(columnName))"
                 v-bind:type="getType(property)"
                 v-bind:value="getValue(String(columnName))"
@@ -149,6 +164,12 @@ export default defineComponent({
         },
         isRichText(columnName: string) {
             return this.schema.extra.rich_text_columns.includes(columnName)
+        },
+        isReadOnly(columnName: string) {
+            return (
+                this.schema.extra.read_only_columns?.includes(columnName) &&
+                this.$route.params.rowID !== undefined
+            )
         }
     }
 })
@@ -162,5 +183,10 @@ export default defineComponent({
 span.required {
     opacity: 0.5;
     padding-left: 0.05rem;
+}
+
+span.readonly {
+    opacity: 0.5;
+    font-size: 0.9rem;
 }
 </style>

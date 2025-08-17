@@ -13,6 +13,7 @@ from piccolo.columns import (
     BigInt,
     Boolean,
     Date,
+    DoublePrecision,
     Email,
     ForeignKey,
     Integer,
@@ -341,6 +342,38 @@ class Review(Table):
         return Readable(template="%s", columns=[cls.reviewer])
 
 
+class NonPrimaryKey(Table):
+    pk = Varchar(primary_key=True)
+    name = Varchar()
+
+
+class ReadOnlyColumns(Table):
+    class Genre(int, enum.Enum):
+        fantasy = 1
+        sci_fi = 2
+        documentary = 3
+
+    array_col = Array(base_column=Varchar())
+    bigint_col = BigInt()
+    boolean_col = Boolean()
+    choice_col = SmallInt(choices=Genre)
+    date_col = Date()
+    time_col = Time()
+    foreignkey_col = ForeignKey(NonPrimaryKey)
+    integer_col = Integer()
+    interval_col = Interval()
+    json_col = JSON()
+    numeric_col = Numeric(digits=(5, 2))
+    real_col = Real()
+    double_precision_col = DoublePrecision()
+    smallint_col = SmallInt()
+    text_col = Text()
+    timestamp_col = Timestamp()
+    timestamptz_col = Timestamptz()
+    uuid_col = UUID()
+    varchar_col = Varchar()
+
+
 ###############################################################################
 # Create the schema and populate data
 
@@ -354,6 +387,7 @@ TABLE_CLASSES: tuple[type[Table], ...] = (
     Ticket,
     ArrayColumns,
     NullableColumns,
+    ReadOnlyColumns,
     RequiredColumns,
     SortedColumns,
     Constraints,
@@ -366,6 +400,7 @@ TABLE_CLASSES: tuple[type[Table], ...] = (
     Serie,
     Actor,
     Review,
+    NonPrimaryKey,
 )
 
 

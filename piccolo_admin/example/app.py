@@ -24,6 +24,7 @@ from piccolo_api.mfa.authenticator.provider import AuthenticatorProvider
 from piccolo_admin.endpoints import OrderBy, TableConfig, create_admin
 from piccolo_admin.example.forms import FORMS
 from piccolo_admin.example.tables import (
+    Actor,
     ArrayColumns,
     AuthenticatorSecret,
     Band,
@@ -34,16 +35,17 @@ from piccolo_admin.example.tables import (
     Director,
     Genre,
     Movie,
+    NonPrimaryKey,
     NullableColumns,
+    ReadOnlyColumns,
     RequiredColumns,
+    Review,
+    Serie,
     Sessions,
     SortedColumns,
     Studio,
     Ticket,
     User,
-    Serie,
-    Actor,
-    Review,
     create_schema,
     populate_data,
     set_engine,
@@ -243,6 +245,32 @@ date_time_config = TableConfig(
     table_class=DateTimeColumns, menu_group="Testing"
 )
 
+read_only_config = TableConfig(
+    table_class=ReadOnlyColumns,
+    read_only_columns=[
+        ReadOnlyColumns.array_col,
+        ReadOnlyColumns.bigint_col,
+        ReadOnlyColumns.boolean_col,
+        ReadOnlyColumns.choice_col,
+        ReadOnlyColumns.date_col,
+        ReadOnlyColumns.time_col,
+        ReadOnlyColumns.foreignkey_col,
+        ReadOnlyColumns.integer_col,
+        ReadOnlyColumns.interval_col,
+        ReadOnlyColumns.json_col,
+        ReadOnlyColumns.numeric_col,
+        ReadOnlyColumns.real_col,
+        ReadOnlyColumns.double_precision_col,
+        ReadOnlyColumns.smallint_col,
+        ReadOnlyColumns.text_col,
+        ReadOnlyColumns.timestamp_col,
+        ReadOnlyColumns.timestamptz_col,
+        ReadOnlyColumns.uuid_col,
+        ReadOnlyColumns.varchar_col,
+    ],
+    menu_group="Testing",
+)
+
 choices_config = TableConfig(
     table_class=Choices,
     menu_group="Testing",
@@ -277,6 +305,10 @@ serie_config = TableConfig(
     menu_group="Target column",
 )
 
+non_primary_key_config = TableConfig(
+    table_class=NonPrimaryKey,
+    menu_group="Non primary key",
+)
 
 ###############################################################################
 
@@ -294,11 +326,13 @@ APP = create_admin(
         array_columns_config,
         nullable_config,
         required_columns_config,
+        read_only_config,
         sorted_columns_config,
         constraints_config,
         constraints_target_config,
         date_time_config,
         choices_config,
+        non_primary_key_config,
     ],
     forms=FORMS,
     auth_table=User,

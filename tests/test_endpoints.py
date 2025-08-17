@@ -157,6 +157,19 @@ class TestTableConfig(TestCase):
                 link_column=TableB.table_a,
             )
 
+    def test_read_only_columns(self):
+        """
+        Make sure the `read_only_columns` is returned.
+        """
+        post_table = TableConfig(
+            table_class=Post,
+            read_only_columns=[Post.name, Post.created],
+        )
+        self.assertEqual(
+            post_table.get_read_only_columns_names(),
+            ("name", "created"),
+        )
+
     def test_sort_column(self):
         """
         Make sure the custom `sort_column` is returned.
@@ -814,6 +827,7 @@ class TestTables(TableTest):
         self.assertEqual(
             response.json(),
             [
+                "actor",
                 "array_columns",
                 "band",
                 "choices",
@@ -823,8 +837,12 @@ class TestTables(TableTest):
                 "director",
                 "genre",
                 "movie",
+                "non_primary_key",
                 "nullable_columns",
+                "read_only_columns",
                 "required_columns",
+                "review",
+                "serie",
                 "sorted_columns",
                 "studio",
                 "ticket",
@@ -861,6 +879,8 @@ class TestTables(TableTest):
                     "M2M": ["band", "genre"],
                     "Booking": ["ticket"],
                     "Movies": ["director", "movie", "studio"],
+                    "Non primary key": ["non_primary_key"],
+                    "Target column": ["actor", "review", "serie"],
                     "Testing": [
                         "array_columns",
                         "choices",
@@ -868,6 +888,7 @@ class TestTables(TableTest):
                         "constraints",
                         "date_time_columns",
                         "nullable_columns",
+                        "read_only_columns",
                         "required_columns",
                         "sorted_columns",
                     ],

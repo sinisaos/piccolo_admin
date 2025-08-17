@@ -108,6 +108,7 @@ export interface SchemaExtra {
     order_by: OrderByConfig[]
     primary_key_name: string
     rich_text_columns: string[]
+    read_only_columns: string[]
     visible_column_names: string[]
     visible_fields_options: string[]
     visible_filter_names: string[]

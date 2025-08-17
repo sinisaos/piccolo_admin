@@ -19,12 +19,14 @@
                     :isNullable="isNullable"
                     :isFilter="false"
                     :isArray="true"
+                    :disabled="isReadOnly"
                     @updated="updateArray($event, index)"
                 />
                 <input
                     v-else
                     :type="inputType"
                     :value="value"
+                    :readonly="isReadOnly"
                     @change="updateArray(getValueFromEvent($event), index)"
                 />
 
@@ -32,10 +34,19 @@
                     href="#"
                     v-on:click.prevent="showMedia(index)"
                     :value="value"
+                    :style="
+                        isReadOnly ? 'pointer-events: none' : 'cursor: pointer'
+                    "
                     v-if="isMediaColumn && !isFilter"
                     ><font-awesome-icon icon="eye" title="View"
                 /></a>
-                <a href="#" v-on:click.prevent="removeArrayElement(index)">
+                <a
+                    href="#"
+                    :style="
+                        isReadOnly ? 'pointer-events: none' : 'cursor: pointer'
+                    "
+                    v-on:click.prevent="removeArrayElement(index)"
+                >
                     <font-awesome-icon icon="times" title="Remove" />
                 </a>
             </li>
@@ -44,6 +55,9 @@
                     class="add"
                     href="#"
                     v-on:click.prevent="addArrayElement"
+                    :style="
+                        isReadOnly ? 'pointer-events: none' : 'cursor: pointer'
+                    "
                     v-if="enableAddButton"
                     data-uitest="add_array_item_button"
                 >
@@ -93,6 +107,10 @@ export default defineComponent({
             default: null
         },
         isNullable: {
+            type: Boolean as PropType<boolean>,
+            default: false
+        },
+        isReadOnly: {
             type: Boolean as PropType<boolean>,
             default: false
         }

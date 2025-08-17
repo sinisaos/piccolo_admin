@@ -2,7 +2,11 @@
     <div class="timedelta_widget">
         <div class="segment">
             <p>{{ $t("Weeks") }}</p>
-            <select v-model.number="weeks" v-on:change="emitEvent">
+            <select
+                v-model.number="weeks"
+                v-on:change="emitEvent"
+                v-bind:disabled="isReadOnly"
+            >
                 <option :key="'w' + week" v-for="week in weekRange">
                     {{ week }}
                 </option>
@@ -11,7 +15,11 @@
 
         <div class="segment">
             <p>{{ $t("Days") }}</p>
-            <select v-model.number="days" v-on:change="emitEvent">
+            <select
+                v-model.number="days"
+                v-on:change="emitEvent"
+                v-bind:disabled="isReadOnly"
+            >
                 <option :key="'d' + day" v-for="day in dayRange">
                     {{ day }}
                 </option>
@@ -20,7 +28,11 @@
 
         <div class="segment">
             <p>{{ $t("Hours") }}</p>
-            <select v-model.number="hours" v-on:change="emitEvent">
+            <select
+                v-model.number="hours"
+                v-on:change="emitEvent"
+                v-bind:disabled="isReadOnly"
+            >
                 <option :key="'h' + hour" v-for="hour in hourRange">
                     {{ hour }}
                 </option>
@@ -29,7 +41,11 @@
 
         <div class="segment">
             <p>{{ $t("Minutes") }}</p>
-            <select v-model.number="minutes" v-on:change="emitEvent">
+            <select
+                v-model.number="minutes"
+                v-on:change="emitEvent"
+                v-bind:disabled="isReadOnly"
+            >
                 <option :key="'m' + minute" v-for="minute in minuteRange">
                     {{ minute }}
                 </option>
@@ -38,7 +54,11 @@
 
         <div class="segment">
             <p>{{ $t("Seconds") }}</p>
-            <select v-model.number="seconds" v-on:change="emitEvent">
+            <select
+                v-model.number="seconds"
+                v-on:change="emitEvent"
+                v-bind:disabled="isReadOnly"
+            >
                 <option :key="'s' + second" v-for="second in secondRange">
                     {{ second }}
                 </option>
@@ -63,6 +83,10 @@ export default defineComponent({
             // In seconds
             type: Number as PropType<number>,
             default: 0
+        },
+        isReadOnly: {
+            type: Boolean as PropType<boolean>,
+            default: false
         }
     },
     data() {
