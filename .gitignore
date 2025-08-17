@@ -3,14 +3,9 @@
 .mypy_cache/
 .DS_Store
 node_modules/
-**/dist/*.html
-**/dist/**/*.css
-**/dist/**/*.js
-**/dist/**/*.map
 *.sqlite
 *.egg-info/
 build/
-dist/
 .coverage
 coverage.xml
 htmlcov/
