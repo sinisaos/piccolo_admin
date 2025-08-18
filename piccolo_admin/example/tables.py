@@ -314,32 +314,32 @@ class GenreToBand(Table):
     genre = ForeignKey(Genre)
 
 
-# target column tables
-class Serie(Table):
-    name = Varchar(length=100, unique=True)
+# # target column tables
+# class Serie(Table):
+#     name = Varchar(length=100, unique=True)
 
-    @classmethod
-    def get_readable(cls) -> Readable:
-        return Readable(template="%s", columns=[cls.name])
-
-
-class Actor(Table):
-    name = Varchar(length=100, unique=True)
-
-    @classmethod
-    def get_readable(cls) -> Readable:
-        return Readable(template="%s", columns=[cls.name])
+#     @classmethod
+#     def get_readable(cls) -> Readable:
+#         return Readable(template="%s", columns=[cls.name])
 
 
-class Review(Table):
-    reviewer = Varchar()
-    director = ForeignKey(references=Director)
-    actor = ForeignKey(Actor, target_column=Actor.name)
-    serie = ForeignKey(Serie, target_column=Serie.name)
+# class Actor(Table):
+#     name = Varchar(length=100, unique=True)
 
-    @classmethod
-    def get_readable(cls) -> Readable:
-        return Readable(template="%s", columns=[cls.reviewer])
+#     @classmethod
+#     def get_readable(cls) -> Readable:
+#         return Readable(template="%s", columns=[cls.name])
+
+
+# class Review(Table):
+#     reviewer = Varchar()
+#     director = ForeignKey(references=Director)
+#     actor = ForeignKey(Actor, target_column=Actor.name)
+#     serie = ForeignKey(Serie, target_column=Serie.name)
+
+#     @classmethod
+#     def get_readable(cls) -> Readable:
+#         return Readable(template="%s", columns=[cls.reviewer])
 
 
 class NonPrimaryKey(Table):
@@ -397,9 +397,9 @@ TABLE_CLASSES: tuple[type[Table], ...] = (
     Band,
     Genre,
     GenreToBand,
-    Serie,
-    Actor,
-    Review,
+    # Serie,
+    # Actor,
+    # Review,
     NonPrimaryKey,
 )
 

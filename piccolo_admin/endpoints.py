@@ -231,7 +231,7 @@ class TableConfig:
     time_resolution: Optional[
         dict[Union[Timestamp, Timestamptz, Time], Union[float, int]]
     ] = None
-    target_column: Optional[list[Column]] = None
+    # target_column: Optional[list[Column]] = None
 
     def __post_init__(self):
         if self.visible_columns and self.exclude_visible_columns:
@@ -335,12 +335,12 @@ class TableConfig:
     def is_m2m_columns(self) -> bool:
         return True if self.table_class._meta.m2m_relationships else False
 
-    def get_target_columns_names(self) -> tuple[str, ...]:
-        return (
-            tuple(i._meta.name for i in self.target_column)
-            if self.target_column
-            else ()
-        )
+    # def get_target_columns_names(self) -> tuple[str, ...]:
+    #     return (
+    #         tuple(i._meta.name for i in self.target_column)
+    #         if self.target_column
+    #         else ()
+    #     )
 
 
 PydanticModel = TypeVar("PydanticModel", bound=BaseModel)
@@ -608,7 +608,7 @@ class AdminRouter(FastAPI):
             order_by = table_config.get_order_by()
             time_resolution = table_config.get_time_resolution()
             is_m2m_columns = table_config.is_m2m_columns()
-            target_column = table_config.get_target_columns_names()
+            # target_column = table_config.get_target_columns_names()
             validators = table_config.validators
             if table_class in (auth_table, session_table):
                 validators = validators or Validators()
@@ -634,7 +634,7 @@ class AdminRouter(FastAPI):
                         "order_by": tuple(i.to_dict() for i in order_by),
                         "time_resolution": time_resolution,
                         "is_m2m_columns": is_m2m_columns,
-                        "target_column": target_column,
+                        # "target_column": target_column,
                     },
                     validators=validators,
                     hooks=table_config.hooks,

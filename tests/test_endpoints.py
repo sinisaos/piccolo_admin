@@ -827,7 +827,7 @@ class TestTables(TableTest):
         self.assertEqual(
             response.json(),
             [
-                "actor",
+                # "actor",
                 "array_columns",
                 "band",
                 "choices",
@@ -841,8 +841,8 @@ class TestTables(TableTest):
                 "nullable_columns",
                 "read_only_columns",
                 "required_columns",
-                "review",
-                "serie",
+                # "review",
+                # "serie",
                 "sorted_columns",
                 "studio",
                 "ticket",
@@ -880,7 +880,7 @@ class TestTables(TableTest):
                     "Booking": ["ticket"],
                     "Movies": ["director", "movie", "studio"],
                     "Non primary key": ["non_primary_key"],
-                    "Target column": ["actor", "review", "serie"],
+                    # "Target column": ["actor", "review", "serie"],
                     "Testing": [
                         "array_columns",
                         "choices",
