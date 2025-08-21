@@ -23,7 +23,7 @@ from piccolo_api.mfa.authenticator.provider import AuthenticatorProvider
 
 from piccolo_admin.endpoints import OrderBy, TableConfig, create_admin
 from piccolo_admin.example.forms import FORMS
-from piccolo_admin.example.tables import (  # Actor,; Review,; Serie,
+from piccolo_admin.example.tables import (
     ArrayColumns,
     AuthenticatorSecret,
     Band,
@@ -283,27 +283,9 @@ genre_config = TableConfig(
     menu_group="M2M",
 )
 
-# # we need to provide the target_column argument in the
-# # TableConfig so that Piccolo Admin can distinguish between
-# # primary and non-primary FKs
-# review_config = TableConfig(
-#     table_class=Review,
-#     target_column=[Actor.name, Serie.name],
-#     menu_group="Target column",
-# )
-
-# actor_config = TableConfig(
-#     table_class=Actor,
-#     menu_group="Target column",
-# )
-
-# serie_config = TableConfig(
-#     table_class=Serie,
-#     menu_group="Target column",
-# )
-
 non_primary_key_config = TableConfig(
     table_class=NonPrimaryKey,
+    read_only_columns=[NonPrimaryKey.pk],
     menu_group="Non primary key",
 )
 
@@ -313,9 +295,6 @@ APP = create_admin(
     [
         band_config,
         genre_config,
-        # actor_config,
-        # review_config,
-        # serie_config,
         movie_config,
         director_config,
         studio_config,
@@ -370,6 +349,11 @@ def run(persist: bool = False, engine: str = "sqlite", inflate: int = 0):
 
     if not persist:
         populate_data(inflate=inflate, engine=engine)
+
+    for i in range(1, 10000):
+        genre = Genre(name=f"Genre {i}")
+        genre.save().run_sync()
+        print(genre)
 
     # Server
     class CustomConfig(Config):
