@@ -350,11 +350,6 @@ def run(persist: bool = False, engine: str = "sqlite", inflate: int = 0):
     if not persist:
         populate_data(inflate=inflate, engine=engine)
 
-    for i in range(1, 10000):
-        genre = Genre(name=f"Genre {i}")
-        genre.save().run_sync()
-        print(genre)
-
     # Server
     class CustomConfig(Config):
         use_reloader = True
