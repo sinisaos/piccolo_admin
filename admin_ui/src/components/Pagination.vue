@@ -115,8 +115,6 @@ div#pagination {
             font-size: 0.8rem;
             margin-bottom: 0.5rem;
             margin-right: 0.5rem;
-            background-color: #3889ce;
-            border-radius: .2rem;
 
             &:last-child {
                 margin-right: 0;
@@ -126,7 +124,7 @@ div#pagination {
                 padding: 0.4rem 0.7rem;
                 display: block;
                 text-decoration: none;
-                color: white;
+                color: grey;
 
                 &:hover {
                     background-color: @activeColor;
