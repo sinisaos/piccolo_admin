@@ -24,13 +24,13 @@
 
         <template v-if="choices && type != 'array'">
             <OperatorField :columnName="columnName" v-if="isFilter" />
+            <!-- prevent null value as default -->
             <ChoiceSelect
                 :choices="choices"
                 :fieldName="columnName"
                 :isFilter="isFilter"
                 :isNullable="isNullable"
-                :value="value"
-                :disabled="isReadOnly"
+                :value="localValue || 'all'"
             />
         </template>
 
