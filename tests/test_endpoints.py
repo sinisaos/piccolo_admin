@@ -355,6 +355,11 @@ class TestForms(TableTest):
                     "name": "Nullable fields",
                     "slug": "nullable-fields",
                 },
+                {
+                    "name": "Enum form",
+                    "slug": "enum-form",
+                    "description": "Make a enum form.",
+                },
             ],
         )
 
@@ -570,7 +575,12 @@ class TestForms(TableTest):
                             "description": "Make a booking for a customer.",
                             "name": "Booking form",
                             "slug": "booking-form",
-                        }
+                        },
+                        {
+                            "name": "Enum form",
+                            "slug": "enum-form",
+                            "description": "Make a enum form.",
+                        },
                     ],
                     "Test forms": [
                         {
